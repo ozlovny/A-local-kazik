@@ -76,7 +76,6 @@
   </div>
   <h2>📤 Заявка на вывод</h2>
 <div id="withdraw">
-  <input type="text" id="withdrawAddress" placeholder="TON-адрес" style="width:90%">
   <input type="number" id="withdrawAmount" placeholder="Сумма TON" min="1" style="width:90%">
   <button onclick="submitWithdrawal()">Отправить заявку</button>
 </div>
@@ -87,24 +86,23 @@
   Parse.serverURL = "https://parseapi.back4app.com";
 
   async function submitWithdrawal() {
-    const address = document.getElementById("withdrawAddress").value.trim();
-    const amount = parseInt(document.getElementById("withdrawAmount").value);
-    const statusEl = document.getElementById("withdrawStatus");
+  const amount = parseInt(document.getElementById("withdrawAmount").value);
+  const statusEl = document.getElementById("withdrawStatus");
+  const userId = "anonymous"; // или получи из кошелька, если хочешь связать
 
-    if (!address || !amount || amount < 1) {
-      statusEl.textContent = "❌ Введите корректные данные";
-      return;
-    }
+  if (!amount || amount < 1) {
+    statusEl.textContent = "❌ Введите корректную сумму";
+    return;
+  }
 
-    try {
-      const response = await Parse.Cloud.run("submitWithdrawal", { address, amount });
-      statusEl.textContent = response;
-      document.getElementById("withdrawAddress").value = '';
-      document.getElementById("withdrawAmount").value = '';
-    } catch (err) {
-      statusEl.textContent = typeof err === 'string' ? err : '❌ Ошибка при отправке заявки';
-      console.error(err);
-    }
+  try {
+    const response = await Parse.Cloud.run("submitWithdrawal", { userId, amount });
+    statusEl.textContent = response;
+    document.getElementById("withdrawAmount").value = '';
+  } catch (err) {
+    statusEl.textContent = typeof err === 'string' ? err : '❌ Ошибка при отправке заявки';
+    console.error(err);
+  }
   }
 </script>
 
