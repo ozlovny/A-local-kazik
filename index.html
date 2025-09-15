@@ -70,6 +70,12 @@
     <input type="number" id="topupAmount" placeholder="Сумма пополнения" min="1">
     <button onclick="topUp()">Пополнить</button>
   </div>
+  <script>
+  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://YOUR_DOMAIN_OR_GITHUB/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect-button'
+  });
+  </script>
 <script>
   const connector = new TonConnect();
   let balance = parseInt(localStorage.getItem('balance')) || 100;
