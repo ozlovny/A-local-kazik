@@ -91,16 +91,29 @@ async function submitWithdrawal() {
   const amount = parseFloat(document.getElementById("withdrawAmount").value);
   const statusEl = document.getElementById("withdrawStatus");
 
+  const localBalance = parseFloat(localStorage.getItem('balance')) || 0;
+
   if (!address || !amount || amount < 1) {
     statusEl.textContent = "❌ Введите корректные данные";
     return;
   }
 
+  if (localBalance < amount) {
+    statusEl.textContent = `❌ Недостаточно средств. Баланс: ${localBalance.toFixed(2)} TON`;
+    return;
+  }
+
   try {
     const response = await Parse.Cloud.run("submitWithdrawal", {
-      userId: address, // используем введённый адрес как userId
+      address,
       amount
     });
+
+    // уменьшаем локальный баланс
+    const newBalance = localBalance - amount;
+    localStorage.setItem('balance', newBalance);
+    document.getElementById('balance').textContent = `Баланс: ${newBalance.toFixed(2)} TON`;
+
     statusEl.textContent = response;
     document.getElementById("withdrawAddress").value = '';
     document.getElementById("withdrawAmount").value = '';
