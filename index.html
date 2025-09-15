@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <title>🎮 Главное меню</title>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -43,7 +43,7 @@
     #topup {
       margin-top: 10px;
     }
-    input, button {q
+    input, button {
       padding: 8px;
       font-size: 16px;
       margin: 5px;
@@ -60,65 +60,67 @@
 <body>
   <div class="container">
     <div id="ton-connect-button"></div>
-  <h1>🎮 Выбери игру</h1>
-  <div class="menu">
-    <a href="mines.html">💣 Мины</a>
-    <a href="crash.html">🚀 Crash</a>
-    <a href="index.html">🎰 Рулетка</a>
+    <h1>🎮 Выбери игру</h1>
+    <div class="menu">
+      <a href="mines.html">💣 Мины</a>
+      <a href="crash.html">🚀 Crash</a>
+      <a href="index.html">🎰 Рулетка</a>
+    </div>
+
+    <div id="balance">Баланс: 100 монет</div>
+    <div id="topup">
+      <input type="number" id="topupAmount" placeholder="Сумма TON" min="1">
+      <button onclick="sendTon()">Пополнить через TON</button>
+    </div>
   </div>
 
-  <div id="balance">Баланс: 100 ₽</div>
-  <div id="topup">
-    <input type="number" id="topupAmount" placeholder="Сумма пополнения" min="1">
-    <button onclick="topUp()">Пополнить</button>
-  </div>
   <script>
-  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://phenomenal-bubblegum-d6b71e.netlify.app/tonconnect-manifest.json',
-    buttonRootId: 'ton-connect-button'
-  });
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://phenomenal-bubblegum-d6b71e.netlify.app/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect-button'
+    });
 
-  const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
-  let balance = parseInt(localStorage.getItem('balance')) || 100;
+    const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
+    let balance = parseInt(localStorage.getItem('balance')) || 100;
 
-  function updateBalance() {
-    document.getElementById('balance').textContent = `Баланс: ${balance} монет`;
-    localStorage.setItem('balance', balance);
-  }
-
-  async function sendTon() {
-    const amount = parseInt(document.getElementById('topupAmount').value);
-    if (!amount || amount < 1) return;
-
-    const wallet = tonConnectUI.wallet;
-    if (!wallet) {
-      alert('❌ Кошелёк не подключен');
-      return;
+    function updateBalance() {
+      document.getElementById('balance').textContent = `Баланс: ${balance} монет`;
+      localStorage.setItem('balance', balance);
     }
 
-    const transaction = {
-      validUntil: Math.floor(Date.now() / 1000) + 60,
-      messages: [
-        {
-          address: recipientAddress,
-          amount: (amount * 1e9).toString() // 1 TON = 1e9 nanoTON
-        }
-      ]
-    };
+    async function sendTon() {
+      const amount = parseInt(document.getElementById('topupAmount').value);
+      if (!amount || amount < 1) return;
 
-    try {
-      await tonConnectUI.sendTransaction(transaction);
-      balance += amount;
-      updateBalance();
-      alert(`✅ Пополнено на ${amount} TON`);
-      document.getElementById('topupAmount').value = '';
-    } catch (e) {
-      alert('❌ Ошибка при отправке TON');
-      console.error(e);
+      const wallet = tonConnectUI.wallet;
+      if (!wallet) {
+        alert('❌ Кошелёк не подключен');
+        return;
+      }
+
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 60,
+        messages: [
+          {
+            address: recipientAddress,
+            amount: (amount * 1e9).toString()
+          }
+        ]
+      };
+
+      try {
+        await tonConnectUI.sendTransaction(transaction);
+        balance += amount;
+        updateBalance();
+        alert(`✅ Пополнено на ${amount} TON`);
+        document.getElementById('topupAmount').value = '';
+      } catch (e) {
+        alert('❌ Ошибка при отправке TON');
+        console.error(e);
+      }
     }
-  }
 
-  updateBalance();
+    updateBalance();
   </script>
 </body>
 </html>
