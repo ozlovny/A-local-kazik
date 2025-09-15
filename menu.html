@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<script src="https://unpkg.com/@tonconnect/sdk"></script>
+<head>
+  <meta charset="UTF-8">
+  <title>🎮 Главное меню</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding-top: 40px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 250px;
+      margin: auto;
+    }
+    .menu a {
+      display: block;
+      padding: 15px;
+      background: #222;
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .menu a:hover {
+      background: #ff4444;
+    }
+    #balance {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    #topup {
+      margin-top: 10px;
+    }
+    input, button {q
+      padding: 8px;
+      font-size: 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background: #44aa44;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Выбери игру</h1>
+  <div class="menu">
+    <a href="mines.html">💣 Мины</a>
+    <a href="crash.html">🚀 Crash</a>
+    <a href="index.html">🎰 Рулетка</a>
+  </div>
+
+  <div id="balance">Баланс: 100 ₽</div>
+  <div id="topup">
+    <input type="number" id="topupAmount" placeholder="Сумма пополнения" min="1">
+    <button onclick="topUp()">Пополнить</button>
+  </div>
+<script>
+  const connector = new TonConnect();
+  let balance = parseInt(localStorage.getItem('balance')) || 100;
+  let walletConnected = false;
+
+  function updateBalance() {
+    document.getElementById('balance').textContent = `Баланс: ${balance} монет`;
+    localStorage.setItem('balance', balance);
+  }
+
+  async function connectWallet() {
+    await connector.restoreConnection();
+    if (!connector.connected) {
+      await connector.connectWallet();
+    }
+    walletConnected = true;
+    document.getElementById('walletStatus').textContent = '🔌 Кошелёк: подключен';
+  }
+
+  async function sendTon() {
+    if (!walletConnected) {
+      await connectWallet();
+    }
+
+    const amount = parseInt(document.getElementById('topupAmount').value);
+    if (!amount || amount < 1) return;
+
+    const transaction = {
+      validUntil: Math.floor(Date.now() / 1000) + 60,
+      messages: [
+        {
+          address: 'YOUR_TESTNET_ADDRESS_HERE',
+          amount: (amount * 1e9).toString(), // 1 TON = 1e9 nanoTON
+        }
+      ]
+    };
+
+    try {
+      await connector.sendTransaction(transaction);
+      balance += amount;
+      updateBalance();
+      alert(`✅ Пополнено на ${amount} TON`);
+    } catch (e) {
+      alert('❌ Ошибка при отправке TON');
+    }
+  }
+
+  updateBalance();
+</script>
+  <script>
+  let balance = parseInt(localStorage.getItem('balance')) || 100;
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = `Баланс: ${balance} ₽`;
+      localStorage.setItem('balance', balance);
+    }
+
+    function topUp() {
+      const amount = parseInt(document.getElementById('topupAmount').value);
+      if (!amount || amount < 1) return;
+      balance += amount;
+      updateBalance();
+      document.getElementById('topupAmount').value = '';
+    }
+
+    updateBalance();
+  </script>
+</body>
+</html>
