@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Crash Ракета</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding-top: 40px;
+    }
+    .container {
+      max-width: 320px;
+      margin: auto;
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      width: 90%;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background: #ff4444;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    #multiplier {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    #result {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    #stats {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    #history {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    #history span {
+      margin: 0 3px;
+      font-weight: bold;
+    }
+   .menu a {
+     top: 5px;
+      display: block;
+      padding: 15px;
+      background: #222;
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+  .menu {
+    top: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 250px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+   <div class="menu">
+    <a href="menu.html">назад</a>
+  </div>
+  <div class="container">
+    <h1>🚀 Crash Ракета</h1>
+    <div id="balance">Баланс: 100 монет</div>
+    <input type="number" id="bet" placeholder="Ставка" min="1">
+    <input type="number" id="autoCashout" placeholder="Авто-вывод (x)" step="0.1" min="1">
+    <button id="startBtn">Старт</button>
+    <button id="cashoutBtn" disabled>Вывести</button>
+    <div id="multiplier">Множитель: 1.00x</div>
+    <div id="result"></div>
+    <div id="history">📜 История: —</div>
+    <div id="stats"></div>
+  </div>
+  <script src="crash.js"></script>
+</body>
+</html>

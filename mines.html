@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>💣 Мины 10×10</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding-top: 30px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      width: 90%;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background: #ff4444;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+      margin-top: 15px;
+    }
+    .cell {
+      background: #333;
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+      line-height: 30px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cell.revealed {
+      background: #0f0;
+      color: #000;
+      cursor: default;
+    }
+    .cell.bomb {
+      background: #f33;
+      color: #fff;
+    }
+    #multiplier, #result, #balance {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+   .menu a {
+      display: block;
+      padding: 15px;
+      background: #222;
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+  .menu {
+       top: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 250px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+   <div class="menu">
+    <a href="menu.html">назад</a>
+  </div>
+  
+  <div class="container">
+    <h1>💣 Мины 10×10</h1>
+    <div id="balance">Баланс: 100 монет</div>
+    <input type="number" id="bet" placeholder="Ставка" min="1">
+    <input type="number" id="mines" placeholder="Мин (1–99)" min="1" max="99">
+    <button id="startBtn">Начать игру</button>
+    <div id="multiplier">Множитель: 1.00x</div>
+    <button id="cashoutBtn" disabled>Вывести</button>
+    <div id="result"></div>
+    <div id="grid"></div>
+  </div>
+
+  <script>
+    let balance = parseInt(localStorage.getItem('balance')) || 100;
+    let bet = 0;
+    let mineCount = 0;
+    let bombPositions = [];
+    let revealed = new Set();
+    let gameActive = false;
+
+    const balanceEl = document.getElementById('balance');
+    const betInput = document.getElementById('bet');
+    const minesInput = document.getElementById('mines');
+    const startBtn = document.getElementById('startBtn');
+    const cashoutBtn = document.getElementById('cashoutBtn');
+    const multiplierEl = document.getElementById('multiplier');
+    const resultEl = document.getElementById('result');
+    const gridEl = document.getElementById('grid');
+
+    function updateBalance() {
+      balanceEl.textContent = `Баланс: ${balance} ₽`;
+      localStorage.setItem('balance', balance);
+    }
+
+    function getMultiplier(safeClicks, totalMines) {
+      const risk = totalMines / 100;
+      return +(1 + safeClicks * risk * 1.5).toFixed(2);
+    }
+
+    function generateBombs(count) {
+      const positions = new Set();
+      while (positions.size < count) {
+        positions.add(Math.floor(Math.random() * 100));
+      }
+      return Array.from(positions);
+    }
+
+    function startGame() {
+      bet = parseInt(betInput.value);
+      mineCount = parseInt(minesInput.value);
+      if (!bet || bet < 1 || bet > balance || !mineCount || mineCount < 1 || mineCount > 99) {
+        resultEl.textContent = '❌ Неверные параметры';
+        return;
+      }
+
+      balance -= bet;
+      updateBalance();
+      bombPositions = generateBombs(mineCount);
+      revealed.clear();
+      gameActive = true;
+      resultEl.textContent = '';
+      multiplierEl.textContent = 'Множитель: 1.00x';
+      cashoutBtn.disabled = false;
+      startBtn.disabled = true;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      gridEl.innerHTML = '';
+      for (let i = 0; i < 100; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        cell.addEventListener('click', () => revealCell(i, cell));
+        gridEl.appendChild(cell);
+      }
+    }
+
+    function revealCell(index, cell) {
+      if (!gameActive || revealed.has(index)) return;
+
+      if (bombPositions.includes(index)) {
+        cell.classList.add('bomb');
+        cell.textContent = '💣';
+        resultEl.textContent = '💥 Попал на мину! Ставка сгорела.';
+        gameActive = false;
+        cashoutBtn.disabled = true;
+        startBtn.disabled = false;
+        return;
+      }
+
+      cell.classList.add('revealed');
+      cell.textContent = '✅';
+      revealed.add(index);
+
+      const mult = getMultiplier(revealed.size, mineCount);
+      multiplierEl.textContent = `Множитель: ${mult}x`;
+    }
+
+    function cashOut() {
+      if (!gameActive || revealed.size === 0) return;
+      const mult = getMultiplier(revealed.size, mineCount);
+      const win = Math.floor(bet * mult);
+      balance += win;
+      updateBalance();
+      resultEl.textContent = `✅ Вывел на ${mult}x: +${win} ₽`;
+      gameActive = false;
+      cashoutBtn.disabled = true;
+      startBtn.disabled = false;
+    }
+
+    updateBalance();
+    startBtn.addEventListener('click', startGame);
+    cashoutBtn.addEventListener('click', cashOut);
+  </script>
+</body>
+</html>
