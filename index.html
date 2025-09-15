@@ -78,44 +78,5 @@
 
     const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
   </script>
-<script>
-  const connector = new TonConnect();
-  let balance = parseInt(localStorage.getItem('balance')) || 100;
-
-  function updateBalance() {
-    document.getElementById('balance').textContent = `Баланс: ${balance} монет`;
-    localStorage.setItem('balance', balance);
-  }
-
-  async function connectWallet() {
-    await connector.restoreConnection();
-    if (!connector.connected) {
-      await connector.connectWallet();
-    }
-    document.getElementById('walletStatus').textContent = '🔌 Кошелёк: подключен';
-    document.getElementById('connectBtn').disabled = true;
-  }
-
-  document.getElementById('connectBtn').addEventListener('click', connectWallet);
-  updateBalance();
-</script>
-  <script>
-  let balance = parseInt(localStorage.getItem('balance')) || 100;
-
-    function updateBalance() {
-      document.getElementById('balance').textContent = `Баланс: ${balance} ₽`;
-      localStorage.setItem('balance', balance);
-    }
-
-    function topUp() {
-      const amount = parseInt(document.getElementById('topupAmount').value);
-      if (!amount || amount < 1) return;
-      balance += amount;
-      updateBalance();
-      document.getElementById('topupAmount').value = '';
-    }
-
-    updateBalance();
-  </script>
 </body>
 </html>
