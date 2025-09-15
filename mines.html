@@ -86,14 +86,14 @@
 </head>
 <body>
    <div class="menu">
-    <a href="menu.html">назад</a>
+    <a href="index.html">назад</a>
   </div>
   
   <div class="container">
     <h1>💣 Мины 10×10</h1>
-    <div id="balance">Баланс: 100 монет</div>
+    <div id="balance">Баланс: 0 Ton</div>
     <input type="number" id="bet" placeholder="Ставка" min="1">
-    <input type="number" id="mines" placeholder="Мин (1–99)" min="1" max="99">
+    <input type="number" id="mines" placeholder="Мин (0.01–99)" min="0.01" max="99">
     <button id="startBtn">Начать игру</button>
     <div id="multiplier">Множитель: 1.00x</div>
     <button id="cashoutBtn" disabled>Вывести</button>
@@ -102,7 +102,7 @@
   </div>
 
   <script>
-    let balance = parseInt(localStorage.getItem('balance')) || 100;
+    let balance = parseInt(localStorage.getItem('balance')) || 0;
     let bet = 0;
     let mineCount = 0;
     let bombPositions = [];
@@ -119,7 +119,7 @@
     const gridEl = document.getElementById('grid');
 
     function updateBalance() {
-      balanceEl.textContent = `Баланс: ${balance} ₽`;
+      balanceEl.textContent = `Баланс: ${balance} Ton`;
       localStorage.setItem('balance', balance);
     }
 
