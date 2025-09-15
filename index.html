@@ -67,7 +67,7 @@
       <a href="index.html">🎰 Рулетка</a>
     </div>
 
-    <div id="balance">Баланс: 100 монет</div>
+    <div id="balance">Баланс: 0 ton</div>
     <div id="topup">
       <input type="number" id="topupAmount" placeholder="Сумма TON" min="1">
       <button onclick="sendTon()">Пополнить через TON</button>
@@ -81,10 +81,10 @@
     });
 
     const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
-    let balance = parseInt(localStorage.getItem('balance')) || 100;
+    let balance = parseInt(localStorage.getItem('balance')) || 0;
 
     function updateBalance() {
-      document.getElementById('balance').textContent = `Баланс: ${balance} монет`;
+      document.getElementById('balance').textContent = `Баланс: ${balance} ton`;
       localStorage.setItem('balance', balance);
     }
 
