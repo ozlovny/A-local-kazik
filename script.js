@@ -1,5 +1,5 @@
 const symbols = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
-let balance = parseInt(localStorage.getItem('balance')) || 10;
+let balance = parseInt(localStorage.getItem('balance')) || 0;
 
 const balanceEl = document.getElementById('balance');
 const slotsEl = document.getElementById('slots');
@@ -9,7 +9,7 @@ const betInput = document.getElementById('bet');
 const logEl = document.getElementById('log');
 
 function updateBalance() {
-  balanceEl.textContent = `Баланс: ${balance} ₽`;
+  balanceEl.textContent = `Баланс: ${balance} Ton`;
   localStorage.setItem('balance', balance);
 }
 
@@ -65,17 +65,17 @@ function spinSlots() {
 
     if (slotResult.every(s => s === '7️⃣')) {
       win = bet * 50;
-      resultEl.textContent = `💥 Джекпот! Выигрыш: +${win} $`;
+      resultEl.textContent = `💥 Джекпот! Выигрыш: +${win} Ton`;
     } else if (slotResult[0] === slotResult[1] && slotResult[1] === slotResult[2]) {
       win = bet * 5;
-      resultEl.textContent = `🎉 Три одинаковых! Выигрыш: +${win} ₽`;
+      resultEl.textContent = `🎉 Три одинаковых! Выигрыш: +${win} Ton`;
     } else {
-      resultEl.textContent = `😢 Проигрыш: -${bet} ₽`;
+      resultEl.textContent = `😢 Проигрыш: -${bet} Ton`;
     }
 
     balance += win;
     updateBalance();
-    log(`🎲 ${slotResult.join(' ')} | Ставка: ${bet} ₽ | Выигрыш: ${win} ₽`);
+    log(`🎲 ${slotResult.join(' ')} | Ставка: ${bet} Ton | Выигрыш: ${win} Ton`);
     spinBtn.disabled = false;
   });
 }
