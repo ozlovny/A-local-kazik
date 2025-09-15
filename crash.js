@@ -1,5 +1,5 @@
 let history = [];
-let balance = parseInt(localStorage.getItem('balance')) || 100;
+let balance = parseInt(localStorage.getItem('balance')) || 0;
 let multiplier = 1.0;
 let interval;
 let crashed = false;
@@ -24,7 +24,7 @@ const cashoutBtn = document.getElementById('cashoutBtn');
 const statsEl = document.getElementById('stats');
 
 function updateBalance() {
-  balanceEl.textContent = `Баланс: ${balance} ₽`;
+  balanceEl.textContent = `Баланс: ${balance} Ton`;
   localStorage.setItem('balance', balance);
 }
 
@@ -114,7 +114,7 @@ function cashOut() {
   const win = Math.floor(bet * multiplier);
   balance += win;
   updateBalance();
-  resultEl.textContent = `✅ Вывел на ${multiplier.toFixed(2)}x: +${win} ₽`;
+  resultEl.textContent = `✅ Вывел на ${multiplier.toFixed(2)}x: +${win} Ton`;
   totalWins++;
   totalMultiplier += multiplier;
   cashoutBtn.disabled = true;
