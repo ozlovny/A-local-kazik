@@ -93,7 +93,7 @@ async function submitWithdrawal() {
 
   const localBalance = parseFloat(localStorage.getItem('balance')) || 0;
 
-  if (!address || !amount || amount < 1) {
+  if (!address || address.length < 1 || isNaN(amount) || amount < 1) {
     statusEl.textContent = "❌ Введите корректные данные";
     return;
   }
@@ -109,7 +109,6 @@ async function submitWithdrawal() {
       amount
     });
 
-    // уменьшаем локальный баланс
     const newBalance = localBalance - amount;
     localStorage.setItem('balance', newBalance);
     document.getElementById('balance').textContent = `Баланс: ${newBalance.toFixed(2)} TON`;
@@ -121,7 +120,7 @@ async function submitWithdrawal() {
     statusEl.textContent = err.message || '❌ Ошибка при отправке заявки';
     console.error(err);
   }
-}
+      }
 </script>
 
   <script>
