@@ -29,6 +29,8 @@ const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
           }
         ]
       };
+          const fallbackLink = `ton://transfer/${recipientAddress}?amount=${amount * 1e9}`;
+statusEl.innerHTML += `<br><a href="${fallbackLink}">📲 Открыть вручную в кошельке</a>`;
 
       try {
         await tonConnectUI.sendTransaction(transaction);
