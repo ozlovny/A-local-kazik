@@ -62,7 +62,7 @@ function getCrashPoint() {
 }
 
 function startGame() {
-  bet = parseInt(betInput.value);
+  bet = parseFloat(betInput.value);
   autoCashoutValue = parseFloat(autoCashoutInput.value);
   if (!bet || bet < 0.01 || bet > balance) {
     resultEl.textContent = '❌ Неверная ставка';
