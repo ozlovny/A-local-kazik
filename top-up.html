@@ -32,11 +32,18 @@
   </style>
 </head>
 <body>
-  <h1>💰 Пополнение баланса</h1>
-  <div id="ton-connect-button"></div>
-  <input type="number" id="topupAmount" placeholder="Сумма TON" min="0.01" step="0.01">
-  <button onclick="sendTon()">Пополнить</button>
-  <div id="status"></div>
+<input type="number" id="topupAmount" placeholder="Сумма TON" min="0.01" step="0.01">
+<button onclick="prepareTopUp()">Пополнить</button>
+
+<script>
+function prepareTopUp() {
+  const amount = parseFloat(document.getElementById('topupAmount').value);
+  if (!amount || amount < 0.01) return alert("❌ Введите сумму от 0.01 TON");
+
+  localStorage.setItem('pendingTopUp', amount.toFixed(2));
+  location.href = 'index.html';
+}
+</script>
     <script src="ton.js"></script>
 </body>
 </html>
