@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Цветовая рулетка</title>
+  <style>
+  body{
+    font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding-top: 40px;
+    }
+
+    .roulette-container {
+      width: 300px;
+      height: 100px;
+      overflow: hidden;
+      position: relative;
+      margin: 30px auto;
+      background: #333;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .skins-list {
+      display: flex;
+      position: absolute;
+      left: 0;
+      width: max-content;
+    }
+
+    .skin-item {
+      min-width: 100px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+      border-radius: 5px;
+      margin: 5px;
+      color: #fff;
+    }
+
+    .red { background: #c00; }
+    .yellow { background: #cc0; color: #000; }
+    .green { background: #0c0; }
+
+    .center-line {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 4px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    #spinBtn {
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      background: #44aa44;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    #spinBtn:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    input, select {
+      padding: 8px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    select {
+      background: #333;
+      color: white;
+    }
+  .menu a {
+      display: block;
+      padding: 15px;
+      background: #333;
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+  .menu {
+       top: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 250px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+   <div class="menu">
+    <a href="menu.html">назад</a>
+  </div>
+  <h1>🎯 Цветовая рулетка</h1>
+  <div>Баланс: <span id="balance">100</span> TON</div>
+  <input type="number" id="bet" placeholder="Ставка" min="1" value="10">
+  <select id="chosenColor">
+    <option value="red">Красный</option>
+    <option value="yellow">Жёлтый</option>
+    <option value="green">Зелёный</option>
+  </select>
+  <button id="spinBtn">Крутить</button>
+
+  <div class="roulette-container">
+    <div class="center-line"></div>
+    <div class="skins-list" id="skinsList"></div>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    const colors = [
+      { name: 'red', class: 'red', multiplier: 2.05 },
+      { name: 'yellow', class: 'yellow', multiplier: 2.05 },
+      { name: 'green', class: 'green', multiplier: 15 }
+    ];
+
+    let balance = parseFloat(localStorage.getItem('balance')) || 100;
+    document.getElementById('balance').textContent = balance.toFixed(2);
+
+    const skinsList = document.getElementById("skinsList");
+    const spinBtn = document.getElementById("spinBtn");
+
+    function getWeightedRandomColor() {
+      const rand = Math.random();
+      if (rand < 0.45) return colors.find(c => c.name === 'red');
+      if (rand < 0.90) return colors.find(c => c.name === 'yellow');
+      return colors.find(c => c.name === 'green');
+    }
+
+    function generateRollingColors(winnerColor) {
+      skinsList.innerHTML = "";
+      const totalItems = 40;
+      const centerIndex = Math.floor(totalItems / 2);
+      const sequence = [];
+
+      for (let i = 0; i < totalItems; i++) {
+        let color = colors[Math.floor(Math.random() * colors.length)];
+        sequence.push(color);
+      }
+
+      sequence[centerIndex] = winnerColor;
+
+      sequence.forEach(color => {
+        let div = document.createElement("div");
+        div.className = `skin-item ${color.class}`;
+        div.textContent = color.name.toUpperCase();
+        skinsList.appendChild(div);
+      });
+
+      skinsList.style.transform = "translateX(0px)";
+      skinsList.style.transition = "none";
+
+      return centerIndex;
+    }
+
+    function startRoulette() {
+      const bet = parseFloat(document.getElementById("bet").value);
+      const chosen = document.getElementById("chosenColor").value;
+      const resultEl = document.getElementById("result");
+
+      if (!bet || bet < 1 || bet > balance) {
+        resultEl.textContent = "❌ Неверная ставка";
+        return;
+      }
+
+      spinBtn.disabled = true;
+      balance -= bet;
+      document.getElementById("balance").textContent = balance.toFixed(2);
+      localStorage.setItem("balance", balance);
+      resultEl.textContent = "";
+
+      const winnerColor = getWeightedRandomColor();
+      const centerIndex = generateRollingColors(winnerColor);
+
+      setTimeout(() => {
+        const itemWidth = 110;
+        const containerWidth = document.querySelector(".roulette-container").offsetWidth;
+        const finalPosition = -(centerIndex * itemWidth - containerWidth / 2 + itemWidth / 2);
+
+        skinsList.style.transition = "transform 4s cubic-bezier(0.25, 1, 0.5, 1)";
+        skinsList.style.transform = `translateX(${finalPosition}px)`;
+
+        setTimeout(() => {
+          if (winnerColor.name === chosen) {
+            const win = bet * winnerColor.multiplier;
+            balance += win;
+            balance = parseFloat(balance.toFixed(2));
+            document.getElementById("balance").textContent = balance.toFixed(2);
+            localStorage.setItem("balance", balance);
+            resultEl.textContent = `🎉 Совпало! ${winnerColor.name.toUpperCase()} ×${winnerColor.multiplier} = ${win.toFixed(2)} TON`;
+          } else {
+            resultEl.textContent = `😢 Не совпало. Выпал ${winnerColor.name.toUpperCase()}`;
+          }
+          spinBtn.disabled = false;
+        }, 4100);
+      }, 100);
+    }
+
+    spinBtn.addEventListener("click", startRoulette);
+  </script>
+</body>
+</html>
