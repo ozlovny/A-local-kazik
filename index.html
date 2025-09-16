@@ -130,7 +130,7 @@ async function submitWithdrawal() {
     });
 
     const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
-    let balance = parseInt(localStorage.getItem('balance')) || 0;
+    let balance = parseFloat(localStorage.getItem('balance')) || 0;
 
     function updateBalance() {
       document.getElementById('balance').textContent = `Баланс: ${balance} Ton`;
