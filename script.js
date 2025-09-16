@@ -1,5 +1,5 @@
 const symbols = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
-let balance = parseInt(localStorage.getItem('balance')) || 0;
+let balance = parseFloat(localStorage.getItem('balance')) || 0;
 
 const balanceEl = document.getElementById('balance');
 const slotsEl = document.getElementById('slots');
@@ -9,8 +9,9 @@ const betInput = document.getElementById('bet');
 const logEl = document.getElementById('log');
 
 function updateBalance() {
-  balanceEl.textContent = `Баланс: ${balance} Ton`;
-  localStorage.setItem('balance', balance);
+  balance = parseFloat(balance.toFixed(2));
+  balanceEl.textContent = `Баланс: ${balance.toFixed(2)} Ton`;
+  localStorage.setItem('balance', balance.toFixed(2));
 }
 
 function log(message) {
@@ -47,8 +48,8 @@ function animateSpin(callback) {
 }
 
 function spinSlots() {
-  const bet = parseInt(betInput.value);
-  if (!bet || bet < 1 || bet > balance) {
+  const bet = parseFloat(betInput.value);
+  if (!bet || bet < 0.01 || bet > balance) {
     resultEl.textContent = '❌ Неверная ставка';
     return;
   }
