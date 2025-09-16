@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>💰 Пополнение</title>
+  <title>💰 Пополнение TON</title>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <style>
     body {
@@ -13,16 +13,21 @@
       padding-top: 40px;
     }
     input, button {
-      padding: 8px;
+      padding: 10px;
       font-size: 16px;
-      margin: 5px;
+      margin: 10px;
       border: none;
       border-radius: 5px;
+      width: 80%;
     }
     button {
       background: #44aa44;
       color: white;
       cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -51,8 +56,8 @@
       }
 
       const wallet = tonConnectUI.wallet;
-      if (!wallet) {
-        statusEl.textContent = '❌ Кошелёк не подключен';
+      if (!wallet || !wallet.account?.address) {
+        statusEl.textContent = '❌ Кошелёк не подключён';
         return;
       }
 
@@ -68,9 +73,12 @@
 
       try {
         await tonConnectUI.sendTransaction(transaction);
+
+        // Обновляем локальный баланс
         const currentBalance = parseFloat(localStorage.getItem('balance')) || 0;
         const newBalance = parseFloat((currentBalance + amount).toFixed(2));
         localStorage.setItem('balance', newBalance);
+
         statusEl.textContent = `✅ Пополнено на ${amount.toFixed(2)} TON. Новый баланс: ${newBalance.toFixed(2)} TON`;
         document.getElementById('topupAmount').value = '';
       } catch (e) {
