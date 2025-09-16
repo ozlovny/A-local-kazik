@@ -78,12 +78,17 @@
     </div>
 
     <div id="balance">Баланс: 0 Ton</div>
-    <div id="topup">
-      <input type="number" id="topupAmount" placeholder="Сумма TON" min="0.01">
-      <button onclick="sendTon()">Пополнить через TON</button>
-    </div>
+    
   </div>
   <button onclick="openModal()">Пополнить через TON</button>
+
+   <h2>📤 Заявка на вывод</h2>
+<div id="withdraw">
+  <input type="text" id="withdrawAddress" placeholder="TON-адрес" style="width:90%">
+  <input type="number" id="withdrawAmount" placeholder="Сумма TON" min="1" style="width:90%">
+  <button onclick="submitWithdrawal()">Отправить заявку</button>
+</div>
+<div id="withdrawStatus"></div>
   
 <script>
   Parse.initialize("D0jI4TXxRawLDpR9lCNdMqYMRpfm30ibbpvvnXZy", "gklqNlqFb1Hm4dd1MoUWFsrcX4gQtMsMGMqnmZjn");
