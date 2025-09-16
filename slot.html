@@ -119,7 +119,7 @@
     <a href="index.html">назад</a>
   </div>
   <h1>🎯 Цветовая рулетка</h1>
-  <div>Баланс: <span id="balance">100</span> TON</div>
+  <div>Баланс: <span id="balance">0</span> TON</div>
   <input type="number" id="bet" placeholder="Ставка" min="1" value="10">
   <select id="chosenColor">
     <option value="red">Красный</option>
@@ -142,7 +142,7 @@
       { name: 'green', class: 'green', multiplier: 15 }
     ];
 
-    let balance = parseFloat(localStorage.getItem('balance')) || 100;
+    let balance = parseFloat(localStorage.getItem('balance')) || 0;
     document.getElementById('balance').textContent = balance.toFixed(2);
 
     const skinsList = document.getElementById("skinsList");
