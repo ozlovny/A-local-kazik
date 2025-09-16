@@ -112,7 +112,7 @@ function cashOut() {
   if (hasCashedOut || crashed) return;
   hasCashedOut = true;
   cashout = true;
-  const win = Math.floor(bet * multiplier);
+  const win = parseFloat((bet * multiplier).toFixed(2));
   balance += win;
   updateBalance();
   resultEl.textContent = `✅ Вывел на ${multiplier.toFixed(2)}x: +${win} Ton`;
