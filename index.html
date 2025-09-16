@@ -97,28 +97,42 @@
   Parse.initialize("D0jI4TXxRawLDpR9lCNdMqYMRpfm30ibbpvvnXZy", "gklqNlqFb1Hm4dd1MoUWFsrcX4gQtMsMGMqnmZjn");
   Parse.serverURL = "https://parseapi.back4app.com";
 
-  async function submitWithdrawal() {
-    const address = document.getElementById("withdrawAddress").value.trim();
-    const amount = parseInt(document.getElementById("withdrawAmount").value);
-    const statusEl = document.getElementById("withdrawStatus");
+async function submitWithdrawal() {
+  const address = document.getElementById("withdrawAddress").value.trim();
+  const amount = parseFloat(document.getElementById("withdrawAmount").value);
+  const statusEl = document.getElementById("withdrawStatus");
 
-    if (!address || !amount || amount < 1) {
-      statusEl.textContent = "❌ Введите корректные данные";
-      return;
-    }
+  const localBalance = parseFloat(localStorage.getItem('balance')) || 0;
 
-    try {
-      const response = await Parse.Cloud.run("submitWithdrawal", { address, amount });
-      statusEl.textContent = response;
-      document.getElementById("withdrawAddress").value = '';
-      document.getElementById("withdrawAmount").value = '';
-    } catch (err) {
-      statusEl.textContent = typeof err === 'string' ? err : '❌ Ошибка при отправке заявки';
-      console.error(err);
-    }
+  if (!address || address.length < 1 || isNaN(amount) || amount < 1) {
+    statusEl.textContent = "❌ Введите корректные данные";
+    return;
   }
-</script>
 
+  if (localBalance < amount) {
+    statusEl.textContent = `❌ Недостаточно средств. Баланс: ${localBalance.toFixed(2)} TON`;
+    return;
+  }
+
+  try {
+    const response = await Parse.Cloud.run("submitWithdrawal", {
+      address,
+      amount
+    });
+
+    const newBalance = localBalance - amount;
+    localStorage.setItem('balance', newBalance);
+    document.getElementById('balance').textContent = `Баланс: ${newBalance.toFixed(2)} TON`;
+
+    statusEl.textContent = response;
+    document.getElementById("withdrawAddress").value = '';
+    document.getElementById("withdrawAmount").value = '';
+  } catch (err) {
+    statusEl.textContent = err.message || '❌ Ошибка при отправке заявки';
+    console.error(err);
+  }
+      }
+</script>
   <script>
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://phenomenal-bubblegum-d6b71e.netlify.app/tonconnect-manifest.json',
