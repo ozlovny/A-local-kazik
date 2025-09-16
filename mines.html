@@ -102,7 +102,7 @@
   </div>
 
   <script>
-    let balance = parseInt(localStorage.getItem('balance')) || 0;
+    let balance = parseFloat(localStorage.getItem('balance')) || 0;
     let bet = 0;
     let mineCount = 0;
     let bombPositions = [];
@@ -119,9 +119,11 @@
     const gridEl = document.getElementById('grid');
 
     function updateBalance() {
-      balanceEl.textContent = `Баланс: ${balance} Ton`;
-      localStorage.setItem('balance', balance);
+  balance = parseFloat(balance.toFixed(2));
+  balanceEl.textContent = `Баланс: ${balance.toFixed(2)} Ton`;
+  localStorage.setItem('balance', balance.toFixed(2));
     }
+    
 
     function getMultiplier(safeClicks, totalMines) {
       const risk = totalMines / 100;
@@ -137,9 +139,9 @@
     }
 
     function startGame() {
-      bet = parseInt(betInput.value);
+      bet = parseFloat(betInput.value);
       mineCount = parseInt(minesInput.value);
-      if (!bet || bet < 1 || bet > balance || !mineCount || mineCount < 1 || mineCount > 99) {
+      if (!bet || bet < 0.01 || bet > balance || !mineCount || mineCount < 1 || mineCount > 99) {
         resultEl.textContent = '❌ Неверные параметры';
         return;
       }
