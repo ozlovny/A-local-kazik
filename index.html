@@ -126,13 +126,15 @@
     });
 
     const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
-    let balance = parseInt(localStorage.getItem('balance')) || 0;
+    let balance = parseFloat(localStorage.getItem('balance')) || 0;
 
     function updateBalance() {
       document.getElementById('balance').textContent = `Баланс: ${balance} Ton`;
       localStorage.setItem('balance', balance);
     }
-
+//balance = parseFloat(balance.toFixed(2));
+    //balanceEl.textContent = `Баланс: ${balance.toFixed(2)} Ton`;
+ // localStorage.setItem('balance', balance.toFixed(2));
     async function sendTon() {
       const amount = parseInt(document.getElementById('topupAmount').value);
       if (!amount || amount < 1) return;
