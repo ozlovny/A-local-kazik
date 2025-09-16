@@ -193,7 +193,7 @@
     function cashOut() {
       if (!gameActive || revealed.size === 0) return;
       const mult = getMultiplier(revealed.size, mineCount);
-      const win = Math.floor(bet * mult);
+      const win = parseFloat((bet * mult).toFixed(2));
       balance += win;
       updateBalance();
       resultEl.textContent = `✅ Вывел на ${mult}x: +${win} ₽`;
