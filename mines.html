@@ -140,7 +140,7 @@
 
     function startGame() {
       bet = parseFloat(betInput.value);
-      mineCount = parseInt(minesInput.value);
+      mineCount = parseFloat(minesInput.value);
       if (!bet || bet < 0.01 || bet > balance || !mineCount || mineCount < 1 || mineCount > 99) {
         resultEl.textContent = '❌ Неверные параметры';
         return;
