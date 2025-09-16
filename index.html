@@ -133,10 +133,11 @@ async function submitWithdrawal() {
     let balance = parseInt(localStorage.getItem('balance')) || 0;
 
     function updateBalance() {
-  balance = parseFloat(balance.toFixed(2));
-  balanceEl.textContent = `Баланс: ${balance.toFixed(2)} Ton`;
-  localStorage.setItem('balance', balance.toFixed(2));
+      document.getElementById('balance').textContent = `Баланс: ${balance.toFixed(2)} ₽`;
+      localStorage.setItem('balance', balance);
     }
+ 
+    
 
     async function sendTon() {
       const amount = parseInt(document.getElementById('topupAmount').value);
