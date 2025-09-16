@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>🎮 Главное меню</title>
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-  <script type="text/javascript" src="https://unpkg.com/parse/dist/parse.min.js"></script>
+  <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -41,17 +40,12 @@
       margin-top: 20px;
       font-size: 18px;
     }
-    #topup {
-      margin-top: 10px;
-    }
-    input, button {
+    button {
       padding: 8px;
       font-size: 16px;
-      margin: 5px;
+      margin-top: 10px;
       border: none;
       border-radius: 5px;
-    }
-    button {
       background: #44aa44;
       color: white;
       cursor: pointer;
@@ -59,117 +53,19 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="ton-connect-button"></div>
-    <h1>🎮 Выбери игру</h1>
-    <div class="menu">
-      <a href="mines.html">💣 Мины</a>
-      <a href="crash.html">🚀 Crash</a>
-      <a href="777.html">🎰 Рулетка</a>
-    </div>
-
-    <div id="balance">Баланс: 0 Ton</div>
-    <div id="topup">
-      <input type="number" id="topupAmount" placeholder="Сумма TON" min="0.01">
-      <button onclick="sendTon()">Пополнить через TON</button>
-    </div>
+  <h1>🎮 Выбери игру</h1>
+  <div class="menu">
+    <a href="mines.html">💣 Мины</a>
+    <a href="crash.html">🚀 Crash</a>
+    <a href="777.html">🎰 Рулетка</a>
   </div>
-  <h2>📤 Заявка на вывод</h2>
-<div id="withdraw">
-  <input type="text" id="withdrawAddress" placeholder="TON-адрес получателя" style="width:90%">
-  <input type="number" id="withdrawAmount" placeholder="Сумма вывода (TON)" min="0.01">
-  <button onclick="submitWithdrawal()">Отправить заявку</button>
-</div>
-<div id="withdrawStatus"></div>
-  
-<script>
-  Parse.initialize("D0jI4TXxRawLDpR9lCNdMqYMRpfm30ibbpvvnXZy", "gklqNlqFb1Hm4dd1MoUWFsrcX4gQtMsMGMqnmZjn");
-  Parse.serverURL = "https://parseapi.back4app.com";
 
-async function submitWithdrawal() {
-  const address = document.getElementById("withdrawAddress").value.trim();
-  const amount = parseFloat(document.getElementById("withdrawAmount").value);
-  const statusEl = document.getElementById("withdrawStatus");
+  <div id="balance">Баланс: 0 TON</div>
+  <button onclick="location.href='top-up.html'">Пополнить</button>
 
-  const localBalance = parseFloat(localStorage.getItem('balance')) || 0;
-
-  if (!address || address.length < 1 || isNaN(amount) || amount < 1) {
-    statusEl.textContent = "❌ Введите корректные данные";
-    return;
-  }
-
-  if (localBalance < amount) {
-    statusEl.textContent = `❌ Недостаточно средств. Баланс: ${localBalance.toFixed(2)} TON`;
-    return;
-  }
-
-  try {
-    const response = await Parse.Cloud.run("submitWithdrawal", {
-      address,
-      amount
-    });
-
-    const newBalance = localBalance - amount;
-    localStorage.setItem('balance', newBalance);
-    document.getElementById('balance').textContent = `Баланс: ${newBalance.toFixed(2)} TON`;
-
-    statusEl.textContent = response;
-    document.getElementById("withdrawAddress").value = '';
-    document.getElementById("withdrawAmount").value = '';
-  } catch (err) {
-    statusEl.textContent = err.message || '❌ Ошибка при отправке заявки';
-    console.error(err);
-  }
-      }
-</script>
-
-   <script>
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'https://phenomenal-bubblegum-d6b71e.netlify.app/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect-button'
-    });
-
-    const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
-    let balance = parseFloat(localStorage.getItem('balance')) || 0;
-
-    function updateBalance() {
-      document.getElementById('balance').textContent = `Баланс: ${balance} Ton`;
-      localStorage.setItem('balance', balance);
-    }
-
-    async function sendTon() {
-      const amount = parseInt(document.getElementById('topupAmount').value);
-      if (!amount || amount < 1) return;
-
-      const wallet = tonConnectUI.wallet;
-      if (!wallet) {
-        alert('❌ Кошелёк не подключен');
-        return;
-      }
-
-      const transaction = {
-        validUntil: Math.floor(Date.now() / 1000) + 60,
-        messages: [
-          {
-            address: recipientAddress,
-            amount: (amount * 1e9).toString()
-          }
-        ]
-      };
-
-      try {
-        await tonConnectUI.sendTransaction(transaction);
-        balance += amount;
-        updateBalance();
-        alert(`✅ Пополнено на ${amount} TON`);
-        document.getElementById('topupAmount').value = '';
-      } catch (e) {
-        alert('❌ Ошибка при отправке TON');
-        console.error(e);
-      }
-    }
-
-    updateBalance();
-   </script>
+  <script>
+    const balance = parseFloat(localStorage.getItem('balance')) || 0;
+    document.getElementById('balance').textContent = `Баланс: ${balance.toFixed(2)} TON`;
+  </script>
 </body>
 </html>
