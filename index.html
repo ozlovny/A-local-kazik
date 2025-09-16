@@ -60,14 +60,18 @@
 </head>
 <body>
   <div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000a; z-index:999; justify-content:center; align-items:center;">
-  <div style="background:#222; padding:20px; border-radius:10px; width:90%; max-width:300px;">
-    <h2>💸 Пополнение TON</h2>
+  <div style="background:#222; padding:20px; border-radius:10px; width:90%; max-width:320px;">
+    <h2>💸 Пополнение</h2>
+    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:10px;">
+      <button id="btnTon" onclick="selectMethod('ton')" style="background:#44aa44;">TON</button>
+      <button id="btnBot" onclick="selectMethod('bot')" style="background:#333;">CryptoBot</button>
+    </div>
     <input type="number" id="modalAmount" placeholder="Сумма TON" min="0.01" step="0.01" style="width:100%; margin-bottom:10px;">
     <button onclick="confirmTopUp()">✅ Пополнить</button>
     <button onclick="closeModal()" style="background:#aa4444; margin-top:10px;">❌ Отмена</button>
     <div id="modalStatus" style="margin-top:10px;"></div>
   </div>
-  </div>
+</div>
   <div class="container">
     <div id="ton-connect-button"></div>
     <h1>🎮 Выбери игру</h1>
@@ -75,14 +79,12 @@
       <a href="mines.html">💣 Мины</a>
       <a href="crash.html">🚀 Crash</a>
       <a href="777.html">🎰 Рулетка</a>
+      <button onclick="openModal()">Пополнить</button>
     </div>
 
     <div id="balance">Баланс: 0 Ton</div>
     
-  </div>
-  <button onclick="openModal()">Пополнить через TON</button>
-
-   <h2>📤 Заявка на вывод</h2>
+  <h2>📤 Заявка на вывод</h2>
 <div id="withdraw">
   <input type="text" id="withdrawAddress" placeholder="TON-адрес" style="width:90%">
   <input type="number" id="withdrawAmount" placeholder="Сумма TON" min="1" style="width:90%">
@@ -94,51 +96,36 @@
   Parse.initialize("D0jI4TXxRawLDpR9lCNdMqYMRpfm30ibbpvvnXZy", "gklqNlqFb1Hm4dd1MoUWFsrcX4gQtMsMGMqnmZjn");
   Parse.serverURL = "https://parseapi.back4app.com";
 
-async function submitWithdrawal() {
-  const address = document.getElementById("withdrawAddress").value.trim();
-  const amount = parseFloat(document.getElementById("withdrawAmount").value);
-  const statusEl = document.getElementById("withdrawStatus");
+  async function submitWithdrawal() {
+    const address = document.getElementById("withdrawAddress").value.trim();
+    const amount = parseInt(document.getElementById("withdrawAmount").value);
+    const statusEl = document.getElementById("withdrawStatus");
 
-  const localBalance = parseFloat(localStorage.getItem('balance')) || 0;
+    if (!address || !amount || amount < 1) {
+      statusEl.textContent = "❌ Введите корректные данные";
+      return;
+    }
 
-  if (!address || address.length < 1 || isNaN(amount) || amount < 1) {
-    statusEl.textContent = "❌ Введите корректные данные";
-    return;
+    try {
+      const response = await Parse.Cloud.run("submitWithdrawal", { address, amount });
+      statusEl.textContent = response;
+      document.getElementById("withdrawAddress").value = '';
+      document.getElementById("withdrawAmount").value = '';
+    } catch (err) {
+      statusEl.textContent = typeof err === 'string' ? err : '❌ Ошибка при отправке заявки';
+      console.error(err);
+    }
   }
-
-  if (localBalance < amount) {
-    statusEl.textContent = `❌ Недостаточно средств. Баланс: ${localBalance.toFixed(2)} TON`;
-    return;
-  }
-
-  try {
-    const response = await Parse.Cloud.run("submitWithdrawal", {
-      address,
-      amount
-    });
-
-    const newBalance = localBalance - amount;
-    localStorage.setItem('balance', newBalance);
-    document.getElementById('balance').textContent = `Баланс: ${newBalance.toFixed(2)} TON`;
-
-    statusEl.textContent = response;
-    document.getElementById("withdrawAddress").value = '';
-    document.getElementById("withdrawAmount").value = '';
-  } catch (err) {
-    statusEl.textContent = err.message || '❌ Ошибка при отправке заявки';
-    console.error(err);
-  }
-      }
 </script>
 
-   <script>
+  <script>
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://phenomenal-bubblegum-d6b71e.netlify.app/tonconnect-manifest.json',
       buttonRootId: 'ton-connect-button'
     });
 
     const recipientAddress = "EQDYXMQCS9pzb_9oFiJjV97si_kNZwh0TU-0UtmFG-bHlqGf";
-    let balance = parseFloat(localStorage.getItem('balance')) || 0;
+    let balance = parseInt(localStorage.getItem('balance')) || 0;
 
     function updateBalance() {
       document.getElementById('balance').textContent = `Баланс: ${balance} Ton`;
@@ -178,9 +165,9 @@ async function submitWithdrawal() {
     }
 
     updateBalance();
-   </script>
+  </script>
   <script>
-function openModal() {
+  function openModal() {
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('modalAmount').value = '';
   document.getElementById('modalStatus').textContent = '';
@@ -199,6 +186,13 @@ async function confirmTopUp() {
     return;
   }
 
+  if (selectedMethod === 'bot') {
+    // логика для CryptoBot
+    statusEl.innerHTML = `🔗 Открой <a href="https://t.me/CryptoBot?start=ton-${amount}" target="_blank" style="color:#0f0;">CryptoBot</a> для пополнения`;
+    return;
+  }
+
+  // логика для TON через TonConnect
   const wallet = tonConnectUI.wallet;
   if (!wallet) {
     statusEl.textContent = '❌ Кошелёк не подключён';
@@ -228,5 +222,101 @@ async function confirmTopUp() {
   }
 }
   </script>
+  <script>
+  let selectedMethod = 'ton'; // по умолчанию
+
+function openModal() {
+  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('modalAmount').value = '';
+  document.getElementById('modalStatus').textContent = '';
+  selectMethod('ton');
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+function selectMethod(method) {
+  selectedMethod = method;
+  document.getElementById('btnTon').style.background = method === 'ton' ? '#44aa44' : '#333';
+  document.getElementById('btnBot').style.background = method === 'bot' ? '#44aa44' : '#333';
+}
+
+async function confirmTopUp() {
+  const amount = parseFloat(document.getElementById('modalAmount').value);
+  const statusEl = document.getElementById('modalStatus');
+
+  if (!amount || amount < 0.01) {
+    statusEl.textContent = '❌ Введите сумму от 0.01 TON';
+    return;
+  }
+
+  if (selectedMethod === 'bot') {
+    try {
+      const response = await fetch("https://testnet-pay.crypt.bot/api/createInvoice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Crypto-Pay-API-Token": "48020:AAvPCNEZnJw02ua7E1qyuRp7NhKuZMfhSLy"
+        },
+        body: JSON.stringify({
+          asset: "TON",
+          amount: amount.toFixed(2),
+          description: "Пополнение баланса",
+          payload: "fahillsy",
+          allow_comments: false,
+          allow_anonymous: false
+        })
+      });
+
+      const data = await response.json();
+      if (data.invoice_url) {
+        window.open(data.invoice_url, "_blank");
+        statusEl.innerHTML = `🔗 <a href="${data.invoice_url}" target="_blank" style="color:#0f0;">Открыть инвойс</a>`;
+      } else {
+        statusEl.textContent = '❌ Не удалось создать инвойс';
+        console.error(data);
+      }
+    } catch (err) {
+      statusEl.textContent = '❌ Ошибка при создании инвойса';
+      console.error(err);
+    }
+    return;
+  }
+
+  // TON через TonConnect
+  const wallet = tonConnectUI.wallet;
+  if (!wallet) {
+    statusEl.textContent = '❌ Кошелёк не подключён';
+    return;
+  }
+
+  const transaction = {
+    validUntil: Math.floor(Date.now() / 1000) + 60,
+    messages: [
+      {
+        address: recipientAddress,
+        amount: (amount * 1e9).toString()
+      }
+    ]
+  };
+
+  try {
+    await tonConnectUI.sendTransaction(transaction);
+    balance += amount;
+    balance = parseFloat(balance.toFixed(2));
+    updateBalance();
+    statusEl.textContent = `✅ Пополнено на ${amount.toFixed(2)} TON`;
+    setTimeout(closeModal, 1500);
+  } catch (e) {
+    statusEl.textContent = '❌ Ошибка при отправке TON';
+    console.error(e);
+  }
+}
+  </script>
+  
+
+
+  
 </body>
 </html>
