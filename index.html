@@ -123,7 +123,7 @@ async function submitWithdrawal() {
       }
 </script>
 
-  <script>
+   <script>
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://phenomenal-bubblegum-d6b71e.netlify.app/tonconnect-manifest.json',
       buttonRootId: 'ton-connect-button'
@@ -136,8 +136,6 @@ async function submitWithdrawal() {
       document.getElementById('balance').textContent = `Баланс: ${balance} Ton`;
       localStorage.setItem('balance', balance);
     }
- 
-    
 
     async function sendTon() {
       const amount = parseInt(document.getElementById('topupAmount').value);
@@ -172,6 +170,6 @@ async function submitWithdrawal() {
     }
 
     updateBalance();
-  </script>
+   </script>
 </body>
 </html>
