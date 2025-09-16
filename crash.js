@@ -1,5 +1,5 @@
 let history = [];
-let balance = parseInt(localStorage.getItem('balance')) || 0;
+let balance = parseFloat(localStorage.getItem('balance')) || 0;
 let multiplier = 1.0;
 let interval;
 let crashed = false;
